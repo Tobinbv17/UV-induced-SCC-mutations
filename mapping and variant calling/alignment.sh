@@ -28,10 +28,10 @@ do
 		do
 			if [[ ${filename:39:1} = "${part}" ]] ; then 
 		    	tmp=${tmp},${UNMAPPED}/${filename}
-		  fi
+			fi
 		done
 	readFilesIn="${readFilesIn} ${tmp:1}"
-  done
+  	done
 	./starnormal.sh "${seq}" "${readFilesIn:1}" #"${outSAMattrRGline}" #STAR alignment
 done
 
