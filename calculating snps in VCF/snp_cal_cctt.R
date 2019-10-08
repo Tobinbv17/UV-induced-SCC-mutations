@@ -16,8 +16,7 @@ gtf1 = GTF %>% filter(type == 'transcript') %>% select (seqnames, start, end, st
 #    }
 #  }
 #}
-
-write.table(vcf_out_gtf, '~/czlabwork/vcfczold/20191003_R/vcf_out_gtf_r.dat', row.names = FALSE, sep = '\t', quote = FALSE)
+#write.table(vcf_out_gtf, '~/czlabwork/vcfczold/20191003_R/vcf_out_gtf_r.dat', row.names = FALSE, sep = '\t', quote = FALSE)
 
 
 
