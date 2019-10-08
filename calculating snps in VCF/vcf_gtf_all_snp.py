@@ -24,16 +24,16 @@ with open("/PHShome/yz843/czlabwork/vcfczold/20191007_py/gtf1.dat", 'r') as gtf_
              dict_gtf[chrom] = {}
              if gene_id not in dict_gtf[chrom]:
                  dict_gtf[chrom][gene_id] = {}
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand]
              else:
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand]
         
         else:
             if gene_id not in dict_gtf[chrom]:
                  dict_gtf[chrom][gene_id] = {}
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand]
             else:
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, stran]
 
 
 ###################
@@ -55,7 +55,7 @@ with open("/PHShome/yz843/czlabwork/vcfczold/20191007_py/vcf_gtf_all_gname.dat",
                     strand = dict_gtf[chrom][gene_id][transcript_id][2]
 
                     if int(pos) in range(int(s),int(e)+1):
-                        fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id, gene_name))
+                        fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id))
                                                                                      
                                                                                      
                                                                                      
