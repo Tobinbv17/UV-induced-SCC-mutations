@@ -13,28 +13,28 @@ with open("/PHShome/yz843/czlabwork/vcfczold/20191007_py/gtf1.dat", 'r') as gtf_
     read_gtf = gtf_in.readlines()
     for line in read_gtf:
         line = line.strip().split('\t')
-        chrom, start, end, strand, transcript_id, gene_id = line[0], line[1], line[2], line[3], line[4], line[5]
+        chrom, start, end, strand, transcript_id, gene_id, gene_name = line[0], line[1], line[2], line[3], line[4], line[5], line[6]
 
 
         if chrom not in dict_gtf:
              dict_gtf[chrom] = {}
              if gene_id not in dict_gtf[chrom]:
                  dict_gtf[chrom][gene_id] = {}
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
              else:
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
         
         else:
             if gene_id not in dict_gtf[chrom]:
                  dict_gtf[chrom][gene_id] = {}
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
             else:
-                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand]
+                 dict_gtf[chrom][gene_id][transcript_id] = [start, end, strand, gene_name]
 
 
 ###################
 
-with open("/PHShome/yz843/czlabwork/vcfczold/20191007_py/vcf_gtf.dat", 'w') as fout:
+with open("/PHShome/yz843/czlabwork/vcfczold/20191007_py/vcf_gtf_gname.dat", 'w') as fout:
             
     with open(file, 'r') as vcf_in:
 
@@ -55,17 +55,17 @@ with open("/PHShome/yz843/czlabwork/vcfczold/20191007_py/vcf_gtf.dat", 'w') as f
                             if strand == '+':
                                 #print('yes')
                                 #print(chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id, 'non-transcribed')
-                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id, 'non-transcribed'))
+                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id, 'non-transcribed', gene_name))
 
                             elif strand == '-':
                                 #print(chrom, pos, ref, alt, strand, 'transcribed')
-                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id,'transcribed'))
+                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id,'transcribed',gene_name))
 
                         elif ref == 'G' and alt == 'A': 
                             if strand == '+':
-                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id,'transcribed'))
+                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id,'transcribed',gene_name))
                             elif strand == '-':
-                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id,'non-transcribed'))
+                                fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (chrom, int(pos), ref, alt, strand, sample, GT, AD, gene_id, transcript_id,'non-transcribed',gene_name))
                             
 
 
