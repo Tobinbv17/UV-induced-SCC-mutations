@@ -17,7 +17,7 @@ with open("/PHShome/yz843/czlabwork/vcfczold/20191007_py/gtf1.dat", 'r') as gtf_
     read_gtf = gtf_in.readlines()
     for line in read_gtf:
         line = line.strip().split('\t')
-        chrom, start, end, strand, transcript_id, gene_id, gene_name = line[0], line[1], line[2], line[3], line[4], line[5], line[6]
+        chrom, start, end, strand, transcript_id, gene_id = line[0], line[1], line[2], line[3], line[4], line[5]
 
 
         if chrom not in dict_gtf:
