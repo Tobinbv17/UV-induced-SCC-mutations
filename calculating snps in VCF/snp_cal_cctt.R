@@ -23,13 +23,13 @@ gtf1 = GTF %>% filter(type == 'transcript') %>% select (seqnames, start, end, st
 vcf_gtf_cg_Nname = read.csv("~/czlabwork/vcfczold/20191007_py/vcf_gtf.dat", header = F, sep = "\t")
 colnames(vcf_gtf_cg_Nname) = c("chrom", "pos", "ref", "alt", "strand", "sample", "GT", "AD", "gene_id", "transcript_id", "str_CBD")
 vcf_gtf_cg_Nname$diff = c(diff(vcf_gtf_cg_Nname$pos),0)
-saveRDS(vcf_gtf_cg_Nname, "~/czlabwork/vcfczold/20191007_py/vcf_gtf_cg_diff_all.rds")
 
 colData = readRDS("~/czlabwork/vcfczold/20191007_py/colgroup.rds")
 colData = data.frame(as.factor(colData$V1), as.factor(colData$V2))
 colnames(colData) = c("group", "sample")
 
-vcf_gtf_cg_Nname_diff1 = vcf_gtf_cg_Nname[vcf_gtf_cg_Nname$diff==1,]
+
+vcf_gtf_cg_Nname_diff1 = vcf_gtf_cg_Nname[vcf_gtf_cg_Nname$diff==1,] ### filter CC-TT/GG-AA dint variants only 
 vcf_gtf_cg_Nname_diff1$group = left_join(as.data.frame(vcf_gtf_cg_Nname_diff1), colData, by = "sample")
 
 a = vcf_gtf_cg_Nname_diff1$group
@@ -40,5 +40,19 @@ a_N_diCT1 = t(table(a$str_CBD, a$group)) # transpose the dataframe
 #IgG                 807         252
 #antiPD1             647         188
 fisher.test(table(a$group, a$str_CBD))
+
+saveRDS(vcf_gtf_cg_Nname, "~/czlabwork/vcfczold/20191007_py/vcf_gtf_cg_diff_all.rds")
+
+################
+# data frame, factorize each column
+vcf_gtf_cg_Nname = as.data.frame(lapply(snp_ccgg_data_gname, as.factor))
+# select duplicated rows
+data_dup_row = vcf_gtf_cg_Nname[duplicated(vcf_gtf_cg_Nname$gene_id) | duplicated(vcf_gtf_cg_Nname$gene_id, fromLast = T),]
+# add gene_name column
+vcf_gtf_cg_Nname$gene_id = left_join(vcf_gtf_cg_Nname, gtf1$gene_name, by = "gene_name")
+
+
+
+
 
 
