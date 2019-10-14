@@ -67,5 +67,9 @@ gtf1 = gtf1 %>% select(gene_id, gene_name)
 gtf1 = gtf1[!duplicated(gtf1),]
 snp_UV_dint = left_join(snp_UV_dint, gtf1, by= "gene_id")
 
-saveRDS(snp_UV_dint, "~/czlabwork/vcfczold/20191007_py/snp_UV_dint.rds")
 
+#### 4. seperate AD into 2 columns sep by ","
+library(tidyverse)
+snp_UV_dint = separate(snp_UV_dint, AD, c("AD_ref", "AD_alt"), sep = ",")
+
+saveRDS(snp_UV_dint, "~/czlabwork/vcfczold/20191007_py/snp_UV_dint.rds")
