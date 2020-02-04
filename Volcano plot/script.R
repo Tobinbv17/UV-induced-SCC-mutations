@@ -1,3 +1,8 @@
+### author: yao zhan
+### date: 02/04/2020
+
+
+
 #install.packages("gdata")
 library(gdata)
 mela = read.xls("Documents/2020 Phillip/Melanocyte_shXLOC006189.xlsx", sheet = 1, stringsAsFactors = F, header = T)
