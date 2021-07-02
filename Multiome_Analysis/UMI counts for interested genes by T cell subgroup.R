@@ -299,6 +299,90 @@ df3 = df3[order(df3$UMIs,levels=unique(df2$Var1)),]
 grid.table(df3[,1:5])
 grid.table(df3[,c(1,6:9)])
 
+########################20210701 update. only use nuc and fb samples, to check TNF,IFNG,GZMB,LAG3.
+#### put the nuclear RNA and feature barcode RNA in the same plot
+data1 = wt_nuc %>% subset(nFeature_RNA>=3000)
+data2= pep_nuc %>% subset(nFeature_RNA>=3000)
+data3 = wt_fb %>% subset(nFeature_RNA>=4000)
+data4 = pep_fb %>% subset(nFeature_RNA>=4000)
+#1.set features
+feature=c('CD8A','CD8B','TNF','IFNG','GZMB','LAG3')
+metadata1 = data.frame(as.matrix(GetAssayData(data1,assay = 'RNA',slot = 'counts'))[feature,]%>% t(),
+                      group=data1$group)
+metadata2 = data.frame(as.matrix(GetAssayData(data2,assay = 'RNA',slot = 'counts'))[feature,]%>% t(),
+                       group=data2$group)
+metadata3 = data.frame(as.matrix(GetAssayData(data3,assay = 'RNA',slot = 'counts'))[feature,]%>% t(),
+                       group=data3$group)
+metadata4 = data.frame(as.matrix(GetAssayData(data4,assay = 'RNA',slot = 'counts'))[feature,]%>% t(),
+                       group=data4$group)
+
+metadata = rbind(metadata1,metadata2,metadata3,metadata4)
+metadata$CD8.positive = ifelse(metadata$CD8A>0 | metadata$CD8B>0,'CD8+','CD8-')
+metadata = metadata %>% select(3:8)
+df = melt(metadata,id.vars = c('CD8.positive','group'))
+
+##2!!!! how to align boxplot with grouped violin!!
+ggplot(df, aes(factor(group,levels=c('wt_nuc','pep_nuc','wt_fb','pep_fb')), log(value))) + 
+  geom_jitter(size=.003,aes(color = CD8.positive))+
+  geom_violin(trim=F,position = position_dodge(width = .6),aes(fill=CD8.positive)) + 
+  geom_boxplot(fill='white',width=.08,position = position_dodge(width =.6),
+               outlier.shape = NA,aes(group = interaction(CD8.positive,group)))+
+  labs(x='',y='Gene Expression log(UMI count)') + 
+  facet_wrap(~variable,nrow = 2) +theme(legend.position = 'top') + 
+  scale_fill_manual(values = c('#56B4E9','gold'))+
+  scale_color_manual(values = c('grey','grey'))
+
+dodge = position_dodge(width = .6)
+p5 = ggplot(subset(df,variable=='TNF'), aes(factor(group,levels=c('wt_nuc','pep_nuc','wt_fb','pep_fb')), 
+                                            log(value), fill=CD8.positive)) +
+  geom_jitter(size=.05,aes(color=CD8.positive)) + geom_violin(trim=F,position = dodge) + theme(legend.position = 'top') +
+  geom_boxplot(fill='white',width=.1,aes(group = interaction(CD8.positive,group)),position = dodge) + 
+  labs(x='',y='Gene Expression log(UMI count)') + scale_color_manual(values = c('grey','grey'))+
+  scale_fill_manual(values = c('#56B4E9','gold')) + facet_wrap(~variable,nrow = 1)
+p6 = ggplot(subset(df,variable=='IFNG'), aes(factor(group,levels=c('wt_nuc','pep_nuc','wt_fb','pep_fb')), 
+                                             log(value), fill=CD8.positive)) +
+  geom_jitter(size=.05,aes(color=CD8.positive)) + geom_violin(trim=F,position = dodge) + theme(legend.position = 'top') +
+  geom_boxplot(fill='white',width=.1,aes(group = interaction(CD8.positive,group)),position = dodge) + 
+  labs(x='',y='Gene Expression log(UMI count)') + scale_color_manual(values = c('grey','grey'))+
+  scale_fill_manual(values = c('#56B4E9','gold')) + facet_wrap(~variable,nrow = 1)
+p7 = ggplot(subset(df,variable=='GZMB'), aes(factor(group,levels=c('wt_nuc','pep_nuc','wt_fb','pep_fb')), 
+                                             log(value), fill=CD8.positive)) +
+  geom_jitter(size=.05,aes(color=CD8.positive)) + geom_violin(trim=F,position = dodge) + theme(legend.position = 'top') +
+  geom_boxplot(fill='white',width=.1,aes(group = interaction(CD8.positive,group)),position = dodge) + 
+  labs(x='',y='Gene Expression log(UMI count)') + scale_color_manual(values = c('grey','grey'))+
+  scale_fill_manual(values = c('#56B4E9','gold')) + facet_wrap(~variable,nrow = 1)
+p8 = ggplot(subset(df,variable=='LAG3'), aes(factor(group,levels=c('wt_nuc','pep_nuc','wt_fb','pep_fb')), 
+                                             log(value), fill=CD8.positive)) +
+  geom_jitter(size=.05,aes(color=CD8.positive)) + geom_violin(trim=F,position = dodge) + theme(legend.position = 'top') +
+  geom_boxplot(fill='white',width=.1,aes(group = interaction(CD8.positive,group)),position = dodge) + 
+  labs(x='',y='Gene Expression log(UMI count)') + scale_color_manual(values = c('grey','grey'))+
+  scale_fill_manual(values = c('#56B4E9','gold')) + facet_wrap(~variable,nrow = 1)
+p5+p6+p7+p8+plot_layout(nrow=2)
+#3.calculate UMI ranges and cell counts
+df = melt(metadata,id.vars = c('CD8.positive','group'))
+quantile(df$value)
+df1 <- df %>% mutate(tbl=cut(value,breaks = c(seq(0,10,by=5),seq(100,1900,by=200)), include.lowest = F))
+df2 = rbind(data.frame(table(df1$value==0,df1$CD8.positive,df1$variable,df1$group)),
+            data.frame(table(df1$tbl,df1$CD8.positive,df1$variable,df1$group)))%>%filter(Var1 != FALSE)
+df2$Var1 = gsub('TRUE','=0',df2$Var1)
+df2$Var4 = factor(df2$Var4,levels = c('wt_nuc','pep_nuc','wt_fb','pep_fb'))
+df3 = dcast(df2, Var1~Var2+Var3+Var4, value.var = 'Freq') %>% rename('UMIs'='Var1')
+df3$UMIs = factor(df3$UMIs, levels = unique(df2$Var1))
+df3 = df3[order(df3$UMIs,levels=unique(df2$Var1)),]
+
+df4 = df3[,c(1,2,18,3,19,4,20,5,21)]
+write.csv(df4,'MultiomeSeq/6sample_UMIforCutoff/cd8+tnf.csv')
+
+df5 = df3[,c(1,6,22,7,23,8,24,9,25)]
+write.csv(df5,'MultiomeSeq/6sample_UMIforCutoff/cd8+ifng.csv')
+
+df6 = df3[,c(1,10,26,11,27,12,28,13,29)]
+write.csv(df6,'MultiomeSeq/6sample_UMIforCutoff/cd8+gzmb.csv')
+
+df7 = df3[,c(1,14,30,15,31,16,32,17,33)]
+write.csv(df7,'MultiomeSeq/6sample_UMIforCutoff/cd8+lag3.csv')
+
+
 
 
 
